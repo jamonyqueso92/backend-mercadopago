@@ -1,5 +1,3 @@
-import mercadopago from 'mercadopago';
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Solo se permite POST' });
@@ -14,11 +12,8 @@ export default async function handler(req, res) {
       });
     }
 
-    mercadopago.configure({
-      access_token: process.env.MP_ACCESS_TOKEN
-    });
-
-    const preference = {
+    // Crear preferencia usando fetch directamente a la API de MP
+    const preferenceData = {
       items: [{
         title: `Factura #${numeroComprobante}`,
         description: `Pago de servicios - Factura ${numeroComprobante}`,
@@ -39,12 +34,25 @@ export default async function handler(req, res) {
       auto_return: 'approved'
     };
 
-    const response = await mercadopago.preferences.create(preference);
+    const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(preferenceData)
+    });
+
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(`MP API Error: ${result.message || 'Unknown error'}`);
+    }
     
     res.status(200).json({
       success: true,
-      payment_url: response.body.init_point,
-      preference_id: response.body.id
+      payment_url: result.init_point,
+      preference_id: result.id
     });
 
   } catch (error) {
