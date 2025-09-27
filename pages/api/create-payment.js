@@ -1,4 +1,4 @@
-const mercadopago = require('mercadopago');
+import mercadopago from 'mercadopago';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
