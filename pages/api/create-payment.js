@@ -1,4 +1,4 @@
-import { MercadoPagoConfig, Preference } from 'mercadopago';
+const { MercadoPagoConfig, Preference } = require('mercadopago');
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -16,8 +16,7 @@ export default async function handler(req, res) {
 
     // Configurar cliente de Mercado Pago
     const client = new MercadoPagoConfig({ 
-      accessToken: process.env.MP_ACCESS_TOKEN,
-      options: { timeout: 5000 }
+      accessToken: process.env.MP_ACCESS_TOKEN
     });
 
     // Crear instancia de Preference
@@ -25,33 +24,25 @@ export default async function handler(req, res) {
 
     // Definir la preferencia
     const preferenceData = {
-      items: [
-        {
-          id: numeroComprobante,
-          title: `Factura #${numeroComprobante} - Cobranzas PYN`,
-          description: `Pago de servicios - Factura ${numeroComprobante}`,
-          quantity: 1,
-          currency_id: 'ARS',
-          unit_price: parseFloat(importe)
-        }
-      ],
+      items: [{
+        id: numeroComprobante,
+        title: `Factura #${numeroComprobante} - Cobranzas PYN`,
+        description: `Pago de servicios - Factura ${numeroComprobante}`,
+        quantity: 1,
+        currency_id: 'ARS',
+        unit_price: parseFloat(importe)
+      }],
       external_reference: numeroComprobante,
       payer: {
         name: nombreCliente || 'Cliente',
         email: clienteEmail
-      },
-      payment_methods: {
-        excluded_payment_methods: [],
-        excluded_payment_types: [],
-        installments: 12
       },
       back_urls: {
         success: `${process.env.BASE_URL}/success?factura=${numeroComprobante}`,
         failure: `${process.env.BASE_URL}/failure?factura=${numeroComprobante}`,
         pending: `${process.env.BASE_URL}/pending?factura=${numeroComprobante}`
       },
-      auto_return: 'approved',
-      statement_descriptor: 'COBRANZAS PYN'
+      auto_return: 'approved'
     };
 
     // Crear la preferencia
@@ -68,7 +59,7 @@ export default async function handler(req, res) {
     console.error('Error creando pago MP:', error);
     res.status(500).json({ 
       error: 'Error interno del servidor',
-      details: process.env.NODE_ENV === 'development' ? error.message : 'Error procesando pago'
+      details: error.message
     });
   }
 }
