@@ -1,4 +1,4 @@
-const { MercadoPagoConfig, Preference } = require('mercadopago');
+import { MercadoPagoConfig, Preference } from 'mercadopago';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
