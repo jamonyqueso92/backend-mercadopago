@@ -9,13 +9,13 @@ export default async function handler(req, res) {
     const { numeroComprobante, importe, clienteEmail, nombreCliente } = req.body;
 
     if (!numeroComprobante || !importe || !clienteEmail) {
-      return res.status(400).json({ 
-        error: 'Faltan datos: numeroComprobante, importe, clienteEmail' 
+      return res.status(400).json({
+        error: 'Faltan datos: numeroComprobante, importe, clienteEmail'
       });
     }
 
     // Configurar cliente de Mercado Pago
-    const client = new MercadoPagoConfig({ 
+    const client = new MercadoPagoConfig({
       accessToken: process.env.MP_ACCESS_TOKEN
     });
 
@@ -47,7 +47,7 @@ export default async function handler(req, res) {
 
     // Crear la preferencia
     const response = await preference.create({ body: preferenceData });
-    
+
     res.status(200).json({
       success: true,
       payment_url: response.init_point,
@@ -57,7 +57,7 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Error creando pago MP:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Error interno del servidor',
       details: error.message
     });
