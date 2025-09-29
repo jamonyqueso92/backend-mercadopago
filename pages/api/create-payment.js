@@ -26,7 +26,7 @@ export default async function handler(req, res) {
     const preferenceData = {
       items: [{
         id: numeroComprobante,
-        title: `Factura #${numeroComprobante} - Cobranzas PYN`,
+        title: `Factura #${numeroComprobante}`,
         description: `Pago de servicios - Factura ${numeroComprobante}`,
         quantity: 1,
         currency_id: 'ARS',
